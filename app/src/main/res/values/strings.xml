@@ -1,0 +1,8 @@
+<resources>
+
+  <string name="app_name">PagingQuestion</string>
+
+  <string name="profile">profile</string>
+  <string name="list">list</string>
+
+</resources>

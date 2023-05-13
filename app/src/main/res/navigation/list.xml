@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:id="@+id/list"
+  app:startDestination="@id/frag_list">
+
+  <fragment
+    android:id="@+id/frag_list"
+    android:name="learning.rafaamo.pagingquestion.ui.ListFragment"
+    android:label="@string/list"/>
+
+</navigation>
