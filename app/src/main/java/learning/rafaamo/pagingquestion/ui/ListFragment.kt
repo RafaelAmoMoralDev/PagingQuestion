@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -11,27 +12,37 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import learning.rafaamo.pagingquestion.databinding.FragmentListBinding
+import learning.rafaamo.pagingquestion.databinding.FragmentProfileBinding
 
 @AndroidEntryPoint
 class ListFragment : Fragment() {
 
   private val viewModel: ItemViewModel by viewModels()
 
-  private lateinit var binding: FragmentListBinding
-  private val pagingAdapter = ItemAdapter(ItemAdapter.ItemComparator)
-
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-    binding = FragmentListBinding.inflate(layoutInflater).apply {
-      list.adapter = pagingAdapter
-    }
-    return binding.root
+   return FragmentListBinding.inflate(layoutInflater).root
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
+    val binding = FragmentProfileBinding.bind(view)
+    val adapter = ItemAdapter(ItemAdapter.ItemComparator)
+    binding.list.adapter = adapter
+
+    // postpone and start collecting data
+    postponeEnterTransition()
+
     lifecycleScope.launch {
       viewModel.pagingDataFlow.collectLatest { pagingData ->
-        pagingAdapter.submitData(pagingData)
+        adapter.submitData(pagingData)
+      }
+    }
+
+    // wait till Pages are updated with data
+    adapter.addOnPagesUpdatedListener {
+      // doOnPreDraw here
+      binding.list.doOnPreDraw {
+        // no op if not postponed
+        startPostponedEnterTransition()
       }
     }
   }
