@@ -24,7 +24,7 @@ class ListFragment : Fragment() {
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    val binding = FragmentProfileBinding.bind(view)
+    val binding = FragmentListBinding.bind(view)
     val adapter = ItemAdapter(ItemAdapter.ItemComparator)
     binding.list.adapter = adapter
 
