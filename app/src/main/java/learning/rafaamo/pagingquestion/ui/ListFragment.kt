@@ -19,8 +19,11 @@ class ListFragment : Fragment() {
 
   private val viewModel: ItemViewModel by viewModels()
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-   return FragmentListBinding.inflate(layoutInflater).root
+  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    // create view and then postpone
+    val view = FragmentListBinding.inflate(layoutInflater).root
+    postponeEnterTransition()
+    return view
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -28,21 +31,18 @@ class ListFragment : Fragment() {
     val adapter = ItemAdapter(ItemAdapter.ItemComparator)
     binding.list.adapter = adapter
 
-    // postpone and start collecting data
-    postponeEnterTransition()
-
-    lifecycleScope.launch {
-      viewModel.pagingDataFlow.collectLatest { pagingData ->
-        adapter.submitData(pagingData)
-      }
-    }
-
     // wait till Pages are updated with data
     adapter.addOnPagesUpdatedListener {
       // doOnPreDraw here
       binding.list.doOnPreDraw {
         // no op if not postponed
         startPostponedEnterTransition()
+      }
+    }
+
+    lifecycleScope.launch {
+      viewModel.pagingDataFlow.collectLatest { pagingData ->
+        adapter.submitData(pagingData)
       }
     }
   }
