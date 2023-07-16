@@ -20,23 +20,30 @@ class ListFragment : Fragment() {
   private val viewModel: ItemViewModel by viewModels()
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-    // create view and then postpone
-    val view = FragmentListBinding.inflate(layoutInflater).root
-    postponeEnterTransition()
-    return view
+    return FragmentListBinding.inflate(layoutInflater).root
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    val binding = FragmentListBinding.bind(view)
+    val binding = FragmentProfileBinding.bind(view)
     val adapter = ItemAdapter(ItemAdapter.ItemComparator)
-    binding.list.adapter = adapter
+
+    // postpone and start collecting data
+    postponeEnterTransition()
 
     // wait till Pages are updated with data
     adapter.addOnPagesUpdatedListener {
-      // doOnPreDraw here
-      binding.list.doOnPreDraw {
-        // no op if not postponed
-        startPostponedEnterTransition()
+      binding.list.apply {
+        // Check if the adapter is not set
+        if (this.adapter == null) {
+          // Set the adapter
+          this.adapter = adapter
+
+          // doOnPreDraw here
+          doOnPreDraw {
+            // no op if not postponed
+            startPostponedEnterTransition()
+          }
+        }
       }
     }
 
