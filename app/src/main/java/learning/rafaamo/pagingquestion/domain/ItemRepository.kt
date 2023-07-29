@@ -14,7 +14,7 @@ class ItemRepository @Inject constructor(private val itemDao: ItemDao) {
     return Pager(
       config = PagingConfig(
         pageSize = 20,
-        enablePlaceholders = true
+        enablePlaceholders = false
       ),
       pagingSourceFactory = {
         itemDao.getItems()
